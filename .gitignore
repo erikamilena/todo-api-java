@@ -1,0 +1,17 @@
+# Compiled Java classes
+target/
+*.class
+
+# Log files
+*.log
+
+# IDE specific files (IntelliJ, Eclipse, VS Code)
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Environment variables (Secrets)
+.env
