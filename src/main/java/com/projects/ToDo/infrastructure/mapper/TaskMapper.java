@@ -53,7 +53,6 @@ public class TaskMapper {
         if (entity.getCategory() != null) {
             category = new Category(entity.getCategory().getId());
         }
-
         return new Task(
                 entity.getId(),
                 entity.getTitle(),
@@ -74,7 +73,6 @@ public class TaskMapper {
         if (domain.getCategory() != null) {
             dto.setCategoryId(domain.getCategory().getId());
         }
-
         return dto;
     }
 

@@ -11,13 +11,17 @@ import com.projects.ToDo.infrastructure.persistence.CategoryEntity;
 import com.projects.ToDo.infrastructure.persistence.TaskEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.mockito.Mockito.when;
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -29,10 +33,11 @@ public class TaskServiceTest {
     @Mock
     private TaskMapper mapper;
 
+    @InjectMocks
     private TaskService taskService;
 
      @Test
-     void shouldUpdateTaskSuccessfully() {
+     void shouldReturnAllTaskSuccessfully() {
 
          //Arrange
         Long taskId = 1L;
@@ -49,11 +54,27 @@ public class TaskServiceTest {
          when(mapper.toDomain(dataBaseEntity)).thenReturn(domainTask);
          when(mapper.toDto(domainTask)).thenReturn(expectedDto);
 
-
          // Act
         List<TaskDTO> result = taskService.getAllTasks();
 
          // Assert
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals(expectedDto.getId(), result.get(0).getId());
+        assertEquals(expectedDto.getTitle(), result.get(0).getTitle());
+        assertEquals(expectedDto.getStatus(), result.get(0).getStatus());
+        assertEquals(expectedDto.getCreatedAt(), result.get(0).getCreatedAt());
+        assertEquals(expectedDto.getCategoryId(), result.get(0).getCategoryId());
+
+        verify(taskRepository, times(1)).findAll();
+        verify(mapper, times(1)).toDomain(dataBaseEntity);
+        verify(mapper, times(1)).toDto(domainTask);
 
      }
+
+     @Test
+     void shouldUpdateTaskSuccessfully() {
+
+    }
 }
