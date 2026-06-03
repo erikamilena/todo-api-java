@@ -17,10 +17,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
@@ -76,5 +77,79 @@ public class TaskServiceTest {
      @Test
      void shouldUpdateTaskSuccessfully() {
 
+         // ARRANGE (Set up variables and mock behavior)
+            Long id = 1L;
+            LocalDateTime taskDate = LocalDateTime.of(2024,6,1,12,0);
+            CategoryEntity categoryEntity = new CategoryEntity(1L, "Work");
+            Category category = new Category(1L, "Work");
+
+            TaskDTO expectedDto = new TaskDTO(1L, "Learn English", TaskStatus.PENDING, taskDate, 1L);
+            TaskEntity existingEntity = new TaskEntity(categoryEntity, 1L, "Learn English", TaskStatus.PENDING, taskDate);
+
+            Task domainTask = new Task(1L, "Learn English", TaskStatus.PENDING,taskDate, category);
+            TaskEntity entitySave = new TaskEntity(categoryEntity, 1L, "Learn English", TaskStatus.PENDING, taskDate);
+            TaskEntity updatedEntity = new TaskEntity(categoryEntity, 1L, "Learn Spanish", TaskStatus.PENDING, taskDate);
+
+            when(taskRepository.findById(id)).thenReturn(Optional.of(existingEntity));
+            when(mapper.toDomainFromDto(expectedDto)).thenReturn(domainTask);
+            when(mapper.toEntity(domainTask)).thenReturn(entitySave);
+            when(taskRepository.save(any(TaskEntity.class))).thenReturn(updatedEntity);
+            when(mapper.toDomain(updatedEntity)).thenReturn(domainTask);
+            when(mapper.toDto(domainTask)).thenReturn(expectedDto);
+
+         // ACT
+           TaskDTO result = taskService.updateTask(1L, expectedDto);
+
+         // ASSERT
+         assertNotNull(result);
+         assertEquals(1L, result.getId());
+         assertEquals(expectedDto.getTitle(), result.getTitle());
+         assertEquals(expectedDto.getStatus(), result.getStatus());
+         assertEquals(expectedDto.getCreatedAt(), result.getCreatedAt());
+         assertEquals(expectedDto.getCategoryId(), result.getCategoryId());
+    }
+    @Test
+    void shouldFindTaskByIdSuccessfully(){
+        // Arrange
+        Long id = 1L;
+        LocalDateTime taskDate = LocalDateTime.of(2024,6,1,12,0);
+        CategoryEntity categoryEntity = new CategoryEntity(1L, "Work");
+        Category category = new Category(1L, "Work");
+
+        TaskEntity existingEntity = new TaskEntity(categoryEntity, 1L, "Learn English", TaskStatus.PENDING, taskDate);
+        Task domainTask = new Task(1L, "Learn English", TaskStatus.PENDING,taskDate, category);
+        TaskDTO expectedDto = new TaskDTO(1L, "Learn English", TaskStatus.PENDING, taskDate, 1L);
+
+        when(taskRepository.findById(id)).thenReturn(Optional.of(existingEntity));
+        when(mapper.toDomain(existingEntity)).thenReturn(domainTask);
+        when(mapper.toDto(domainTask)).thenReturn(expectedDto);
+
+        // Act
+        TaskDTO result = taskService.findTaskById(id);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals(expectedDto.getTitle(), result.getTitle());
+        assertEquals(expectedDto.getStatus(), result.getStatus());
+        assertEquals(expectedDto.getCreatedAt(), result.getCreatedAt());
+        assertEquals(expectedDto.getCategoryId(), result.getCategoryId());
+    }
+
+
+    @Test
+    void shouldThrowExceptionWhenTaskNotFound() {
+         // Arrange
+         Long id = 100L;
+
+         when(taskRepository.findById(id)).thenReturn(Optional.empty());
+
+         // Act
+        RuntimeException exception = assertThrows(
+                NoSuchElementException.class,
+                () -> taskService.findTaskById(id));
+
+        // Assert
+        assertEquals("Task not found with ID: 100", exception.getMessage());
     }
 }

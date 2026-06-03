@@ -26,12 +26,17 @@ public class TaskService {
     public void createTask(@Valid TaskDTO taskDTO) {
         Task task = mapper.toDomainFromDto(taskDTO);
         TaskEntity entity = mapper.toEntity(task);
-
         taskRepository.save(entity);
-
         if (task.getTitle() == null || task.getTitle().isEmpty()) {
             throw new IllegalArgumentException("Title is mandatory");
         }
+    }
+
+    public TaskDTO findTaskById(Long id) {
+        TaskEntity existingEntity = taskRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Task not found with ID: " + id));
+        Task task = mapper.toDomain(existingEntity);
+        return mapper.toDto(task);
     }
 
     public List<TaskDTO> getAllTasks() {
@@ -52,10 +57,8 @@ public class TaskService {
     public TaskDTO updateTask(Long id, @Valid TaskDTO taskDTO) {
         TaskEntity existingEntity = taskRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Task not found with id: " + id));
-
         Task task = mapper.toDomainFromDto(taskDTO);
         TaskEntity entityToSave = mapper.toEntity(task);
-
         entityToSave.setId(id);
         TaskEntity updatedEntity =  taskRepository.save(entityToSave);
         return mapper.toDto(mapper.toDomain(updatedEntity));
@@ -64,8 +67,7 @@ public class TaskService {
 
     public List<TaskDTO> getPendingTasksByCategory(String nameCategory) {
         List<TaskEntity> entities = taskRepository.findPendingByCategory(nameCategory);
-
-       return entities.stream()
+        return entities.stream()
                .map(mapper::toDomain)
                .map(mapper::toDto)
                .toList();
@@ -73,7 +75,6 @@ public class TaskService {
 
     public List<TaskDTO> getTasksByDateRange(LocalDateTime start, LocalDateTime end) {
         List<TaskEntity> entities = taskRepository.findByDateRange(start, end);
-
         return entities.stream()
                 .map(mapper::toDomain)
                 .map(mapper::toDto)

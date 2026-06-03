@@ -9,7 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 class ToDoApplicationTests {
 
 	@Test
-	void contextLoads() {
+		void contextLoads() {
 	}
 
 }
