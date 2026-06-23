@@ -24,9 +24,6 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    @Autowired
-    private JwtUtils jwtUtils;
-
     @PostMapping
     public ResponseEntity<List<TaskDTO>> createTask(@Valid @RequestBody TaskDTO taskDTO) {
         taskService.createTask(taskDTO);
@@ -77,15 +74,6 @@ public class TaskController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
         List<TaskDTO> tasks = taskService.getTasksByDateRange(start, end);
         return ResponseEntity.ok(tasks);
-    }
-
-    // A simple public endpoint to get a token without needing a username or password
-    @GetMapping("/get-token")
-    public String getMyLearningToken() {
-        // We will generate a token for a placeholder user profile named "learningUser"
-        String token = jwtUtils.generateToken("learningUser");
-
-        return "SUCCESS! Copy your token below (do not copy the word Bearer):\n\n" + token;
     }
 
 }
