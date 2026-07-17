@@ -1,8 +1,13 @@
 package com.projects.ToDo.infrastructure.rest;
 
 import com.projects.ToDo.application.service.TaskService;
+import com.projects.ToDo.config.JwtUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +42,14 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(
+            summary = "Find a task by its unique ID",
+            description = "Returns a single task DTO based on the ID provided in the URL path. Throws a 404 if not found."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task found successfully"),
+            @ApiResponse(responseCode = "404", description = "Task not found with the provided ID")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<TaskDTO> findTaskById(@PathVariable Long id) {
         TaskDTO taskById = taskService.findTaskById(id);
@@ -62,4 +75,5 @@ public class TaskController {
         List<TaskDTO> tasks = taskService.getTasksByDateRange(start, end);
         return ResponseEntity.ok(tasks);
     }
+
 }
