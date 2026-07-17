@@ -1,4 +1,4 @@
-package com.projects.ToDo.infrastructure.persistence;
+package com.projects.ToDo.infrastructure.persistence.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

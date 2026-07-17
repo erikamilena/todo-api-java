@@ -1,4 +1,4 @@
-package com.projects.ToDo.domain.Model;
+package com.projects.ToDo.domain.model;
 
 public enum TaskStatus {
 
