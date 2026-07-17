@@ -1,11 +1,7 @@
 package com.projects.ToDo.application.service;
 
-import com.projects.ToDo.domain.Model.Task;
-import com.projects.ToDo.domain.Repository.TaskRepository;
-import com.projects.ToDo.infrastructure.mapper.TaskMapper;
-import com.projects.ToDo.infrastructure.persistence.TaskEntity;
-import com.projects.ToDo.infrastructure.api.TaskDTO;
-import jakarta.validation.Valid;
+import com.projects.ToDo.domain.model.Task;
+import com.projects.ToDo.domain.port.TaskRepositoryPort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,69 +11,54 @@ import java.util.NoSuchElementException;
 @Service
 public class TaskService {
 
-  private final TaskRepository taskRepository;
-  private final TaskMapper mapper;
+    private final TaskRepositoryPort taskRepositoryPort;
 
-    public TaskService(TaskRepository taskRepository, TaskMapper mapper) {
-        this.taskRepository = taskRepository;
-        this.mapper = mapper;
+    public TaskService(TaskRepositoryPort taskRepositoryPort) {
+        this.taskRepositoryPort = taskRepositoryPort;
     }
 
-    public void createTask(@Valid TaskDTO taskDTO) {
-        Task task = mapper.toDomainFromDto(taskDTO);
-        TaskEntity entity = mapper.toEntity(task);
-        taskRepository.save(entity);
-        if (task.getTitle() == null || task.getTitle().isEmpty()) {
-            throw new IllegalArgumentException("Title is mandatory");
-        }
+    public Task createTask(Task taskToCreate) {
+
+        return taskRepositoryPort.save(taskToCreate);
     }
 
-    public TaskDTO findTaskById(Long id) {
-        TaskEntity existingEntity = taskRepository.findById(id)
+    public Task findTaskById(Long id) {
+
+        return taskRepositoryPort.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Task not found with ID: " + id));
-        Task task = mapper.toDomain(existingEntity);
-        return mapper.toDto(task);
     }
 
-    public List<TaskDTO> getAllTasks() {
-        List<TaskEntity> entities = taskRepository.findAll();
-        return entities.stream()
-                .map(mapper::toDomain)
-                .map(mapper::toDto)
-                .toList();
+    public List<Task> getAllTasks() {
+
+        return taskRepositoryPort.findAll();
     }
 
-    public void deleteTask(Long id) {
-        if (!taskRepository.existsById(id)) {
-            throw new NoSuchElementException("Can't delete task with id " + id + " because it doesn't exist");
-        }
-        taskRepository.deleteById(id);
-    }
+    public Task updateTask(Long id, Task task) {
 
-    public TaskDTO updateTask(Long id, @Valid TaskDTO taskDTO) {
-        TaskEntity existingEntity = taskRepository.findById(id)
+        Task exitingTask = taskRepositoryPort.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Task not found with id: " + id));
-        Task task = mapper.toDomainFromDto(taskDTO);
-        TaskEntity entityToSave = mapper.toEntity(task);
-        entityToSave.setId(id);
-        TaskEntity updatedEntity =  taskRepository.save(entityToSave);
-        return mapper.toDto(mapper.toDomain(updatedEntity));
 
+       Task updateTask = exitingTask.update(
+               task.getTitle(),
+               task.getState(),
+               task.getCategory());
+
+        return taskRepositoryPort.save(updateTask);
     }
 
-    public List<TaskDTO> getPendingTasksByCategory(String nameCategory) {
-        List<TaskEntity> entities = taskRepository.findPendingByCategory(nameCategory);
-        return entities.stream()
-               .map(mapper::toDomain)
-               .map(mapper::toDto)
-               .toList();
+    public List<Task> getPendingTasksByCategory(String categoryName) {
+
+        return taskRepositoryPort.getPendingTaskByCategory(categoryName);
     }
 
-    public List<TaskDTO> getTasksByDateRange(LocalDateTime start, LocalDateTime end) {
-        List<TaskEntity> entities = taskRepository.findByDateRange(start, end);
-        return entities.stream()
-                .map(mapper::toDomain)
-                .map(mapper::toDto)
-                .toList();
+    public List<Task> getTasksByDateRange(LocalDateTime start, LocalDateTime end) {
+
+        return taskRepositoryPort.findByDateRange(start, end);
+    }
+
+    public Task deleteTask(Long id) {
+
+        return taskRepositoryPort.deleteById(id)
+                .orElseThrow(() -> new NoSuchElementException("Can't delete task with id \" + id + \" because it doesn't exist\""));
     }
 }

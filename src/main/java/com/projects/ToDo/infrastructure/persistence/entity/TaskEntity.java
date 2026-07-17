@@ -1,6 +1,6 @@
-package com.projects.ToDo.infrastructure.persistence;
+package com.projects.ToDo.infrastructure.persistence.entity;
 
-import com.projects.ToDo.domain.Model.TaskStatus;
+import com.projects.ToDo.domain.model.TaskStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

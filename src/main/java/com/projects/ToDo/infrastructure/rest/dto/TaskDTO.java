@@ -1,8 +1,7 @@
-package com.projects.ToDo.infrastructure.api;
+package com.projects.ToDo.infrastructure.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.projects.ToDo.domain.Model.TaskStatus;
-import com.projects.ToDo.infrastructure.persistence.CategoryEntity;
+import com.projects.ToDo.domain.model.TaskStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,7 +17,7 @@ public class TaskDTO {
 
     private Long id;
 
-    @NotBlank(message = "Title is mandatory")
+    @NotBlank(message = "Title is mandatory and cannot be empty")
     private String title;
 
     @NotNull(message = "State doesn't can be empty")

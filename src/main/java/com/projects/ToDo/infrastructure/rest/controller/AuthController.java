@@ -1,4 +1,4 @@
-package com.projects.ToDo.infrastructure.rest;
+package com.projects.ToDo.infrastructure.rest.controller;
 
 import com.projects.ToDo.config.JwtUtils;
 import lombok.RequiredArgsConstructor;
