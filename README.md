@@ -1,10 +1,10 @@
 # ToDo Management API
 
-A modern, robust RESTful API for managing tasks and categories, built with **Java 17** and **Spring Boot 3**. 
+RESTful API for managing tasks and categories, built with **Java 17** and **Spring Boot 3**. 
 
 This project was specifically designed to demonstrate advanced software engineering principles, primarily focusing on **Clean Architecture** and the **Hexagonal Architecture (Ports and Adapters)** pattern. This architectural choice ensures that the core business logic is completely isolated from external frameworks, databases, and delivery mechanisms, resulting in a highly testable, maintainable, and scalable application.
 
-## 🚀 Technologies Used
+##  Technologies Used
 *   **Java 17**
 *   **Spring Boot 3.x** (Web, Data JPA, Security)
 *   **Spring Security & JWT** for stateless authentication
@@ -15,7 +15,7 @@ This project was specifically designed to demonstrate advanced software engineer
 
 ---
 
-## 🏗 Architecture Overview
+##  Architecture Overview
 
 This project is structured using **Hexagonal Architecture**, separating the application into three distinct layers. Dependencies only point **inwards** toward the Domain.
 
@@ -35,7 +35,7 @@ This project is structured using **Hexagonal Architecture**, separating the appl
 
 ---
 
-## 🛠 Features
+##  Features
 *   **Task Management:** Create, Read, Update, and Delete tasks.
 *   **Advanced Filtering:** Fetch tasks by specific date ranges or filter pending tasks by category.
 *   **Data Validation:** Strict DTO validation ensures data integrity before hitting the business layer.
@@ -44,7 +44,7 @@ This project is structured using **Hexagonal Architecture**, separating the appl
 
 ---
 
-## 💻 Getting Started
+##  Getting Started
 
 ### Prerequisites
 *   Java 17+
@@ -70,7 +70,7 @@ Once the application is running, you can explore the interactive API documentati
 
 ---
 
-## 📈 Future Enhancements (Roadmap)
-*   Containerize the application using **Docker**.
-*   Deploy the application to **AWS** (Elastic Beanstalk / ECS).
+##  Future Enhancements (Roadmap)
 *   Implement CI/CD pipelines using **GitHub Actions**.
+*   Deploy the application to **AWS** (Elastic Beanstalk / ECS).
+
