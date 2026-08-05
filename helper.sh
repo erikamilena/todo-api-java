@@ -1,5 +1,11 @@
 #!/bin/bash
 
-mvn clean package
+mvn test
+
+mvn clean package -DskipTests
+
 docker build -t todo-app .
-docker compose up
+
+docker compose down
+
+docker compose up -d

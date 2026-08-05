@@ -11,6 +11,7 @@ public class HealthController {
 
     @GetMapping
     public ResponseEntity<String> healthCheck() {
+
         return ResponseEntity.ok("API is running perfectly on AWS!");
     }
 }
