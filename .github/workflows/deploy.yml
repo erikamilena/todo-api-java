@@ -6,9 +6,33 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Deploy to EC2
+      # 1. Download code onto GitHub's powerful server
+      - uses: actions/checkout@v4
+      
+      # 2. Set up Java on GitHub's server
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          
+      # 3. Build the JAR on GitHub's powerful server (NOT on EC2!)
+      - name: Build JAR
+        run: mvn clean package -DskipTests
+        
+      # 4. Securely copy the finished JAR directly to your EC2 server
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "target/*.jar"
+          target: "/home/ec2-user/todo-api-java"
+          
+      # 5. SSH into EC2 and run Docker (which only takes a few seconds)
+      - name: Restart Docker on EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -16,10 +40,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ec2-user/todo-api-java
-            
             git pull origin main
-            
             chmod +x helper.sh
-
             ./helper.sh
 
