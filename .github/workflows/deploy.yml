@@ -21,14 +21,14 @@ jobs:
       - name: Build JAR
         run: mvn clean package -DskipTests
         
-      # 4. Securely copy the finished JAR directly to your EC2 server
-      - name: Copy JAR to EC2
+      # 4. Securely copy JAR and configuration files directly to your EC2 server
+      - name: Copy Files to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "target/*.jar"
+          source: "target/*.jar,Dockerfile,docker-compose.yml,helper.sh"
           target: "/home/ec2-user/todo-api-java"
           
       # 5. SSH into EC2 and run Docker (which only takes a few seconds)
@@ -41,7 +41,7 @@ jobs:
           command_timeout: 10m
           script: |
             cd /home/ec2-user/todo-api-java
-            git pull origin main
             chmod +x helper.sh
             ./helper.sh
+
 
