@@ -24,6 +24,16 @@ public class Task {
         return new Task(this.id, title, status, this.createdAt, categoryId);
     }
 
+    public Task withCategory(Category category) {
+        return new Task(
+                this.id,
+                this.title,
+                this.state,
+                this.createdAt,
+                category
+        );
+    }
+
     public Long getId() {
         return id;
     }
