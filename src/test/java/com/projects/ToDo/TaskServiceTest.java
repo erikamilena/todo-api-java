@@ -4,12 +4,9 @@ import com.projects.ToDo.application.service.TaskService;
 import com.projects.ToDo.domain.model.Category;
 import com.projects.ToDo.domain.model.Task;
 import com.projects.ToDo.domain.model.TaskStatus;
+import com.projects.ToDo.domain.port.AICategoryServicePort;
 import com.projects.ToDo.domain.port.TaskRepositoryPort;
-import com.projects.ToDo.infrastructure.persistence.mapper.TaskPersistenceMapper;
-import com.projects.ToDo.infrastructure.rest.dto.TaskDTO;
-import com.projects.ToDo.infrastructure.rest.mapper.TaskRestMapper;
 import com.projects.ToDo.infrastructure.persistence.entity.CategoryEntity;
-import com.projects.ToDo.infrastructure.persistence.entity.TaskEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,8 +29,38 @@ public class TaskServiceTest {
     @Mock
     private TaskRepositoryPort taskRepositoryPort;
 
+    @Mock
+    private AICategoryServicePort aiCategoryServicePort;
+
     @InjectMocks
     private TaskService taskService;
+
+    @Test
+    void shouldCallAIServiceIfCategoryIsNull() {
+        LocalDateTime taskDate = LocalDateTime.of(2024, 6, 1, 12, 0);
+
+        Task domainTask1 = new Task(2L, "I need to buy egg carton", TaskStatus.PENDING, taskDate, null);
+
+        when(aiCategoryServicePort.categorizeTask("I need to buy egg carton")).thenReturn(new Category(2L, "Shopping"));
+        when(taskRepositoryPort.save(any())).thenReturn(domainTask1);
+
+        Task result = taskService.createTask(domainTask1);
+
+        verify(aiCategoryServicePort, times(1)).categorizeTask("I need to buy egg carton");
+    }
+
+    @Test
+    void shouldNotCallAIServiceIfCategoryIsNotNull() {
+        LocalDateTime taskDate = LocalDateTime.of(2024, 6, 1, 12, 0);
+
+        Task domainTask1 = new Task(2L, "I need to buy egg carton", TaskStatus.PENDING, taskDate, new Category(2L, "Shopping"));
+
+        when(taskRepositoryPort.save(any())).thenReturn(domainTask1);
+
+        Task result = taskService.createTask(domainTask1);
+
+        verify(aiCategoryServicePort, times(0)).categorizeTask("I need to buy egg carton");
+    }
 
     @Test
     void shouldReturnAllTask() {
